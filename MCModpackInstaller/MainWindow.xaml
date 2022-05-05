@@ -1,0 +1,85 @@
+﻿<Window x:Class="MCModpackInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MCModpackInstaller"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        mc:Ignorable="d"
+        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Zombie_Hat.ico">
+    <Grid>
+
+        <Grid.Background>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <hc:TransitioningContentControl>
+                        <hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="realisticMC.gif"/>
+                    </hc:TransitioningContentControl>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.Background>
+
+        <!-- Setup columns -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="20"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <!-- Setup rows -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!-- Ozaki Logo / settings -->
+        <Button Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent">
+            <Image Source="Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
+        </Button>
+
+        <!-- Installer Logo -->
+        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="mc modpack logo.png" HorizontalAlignment="Center" Margin="0,20,0,0" Width="auto" Height="75"></Image>
+
+        <!-- Step 1 -->
+        <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Content="Select Modpack / Version" Padding="10,10" Margin="0" LineStroke="Khaki" FontWeight="Bold" FontSize="14" Foreground="Khaki"/>
+        <Border Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Width="350" Height="130" CornerRadius="10" Margin="5" Background="White" Opacity="0.8">
+            <StackPanel>
+                <ComboBox hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Modpack:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black"/>
+                <ComboBox hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Version:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Step 1 -->
+        <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Content="Installation Path" Padding="10,10" Margin="0" LineStroke="Khaki" FontWeight="Bold" FontSize="14" Foreground="Khaki"/>
+        <Border Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" Width="350" Height="90" CornerRadius="10" Margin="5" Background="White" Opacity="0.8">
+            <StackPanel>
+                <hc:ButtonGroup Margin="10">
+                    <RadioButton Content="Auto" IsChecked="True" Style="{StaticResource RadioGroupItemHorizontalFirst}"/>
+                    <RadioButton Content="Manual" Style="{StaticResource RadioGroupItemHorizontalLast}"/>
+                </hc:ButtonGroup>
+
+                <WrapPanel HorizontalAlignment="Center">
+                    <TextBox hc:InfoElement.Placeholder="Enter your custom '.minecraft' path" Style="{StaticResource TextBoxExtend}" Width="275"/>
+                    <Button Content="..." Style="{StaticResource ButtonDefault}"></Button>
+                </WrapPanel>
+
+            </StackPanel>
+            
+        </Border>
+
+
+        <WrapPanel Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Button Style="{StaticResource ButtonSuccess}" Content="Install" Margin="20" Width="100"></Button>
+            <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="20" Width="100" Click="btnExit_Click"></Button>
+        </WrapPanel>
+
+    </Grid>
+</Window>
