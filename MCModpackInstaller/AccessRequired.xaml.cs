@@ -20,6 +20,7 @@ namespace MCModpackInstaller
     public partial class AccessRequired : Window
     {
         Credentials.secrets cSecret = new Credentials.secrets();
+        int accessClickCount = 0;
 
         public AccessRequired()
         {
@@ -33,18 +34,29 @@ namespace MCModpackInstaller
 
         private void btnAccess_Click(object sender, RoutedEventArgs e)
         {
-            int CheckAccess = cSecret.AccessReq(txtUserKey.Text);
-            if (CheckAccess == 1)
+            accessClickCount++;
+            int CheckAccess = cSecret.AccessReq(pssUserKey.Password);
+            if (accessClickCount <= 3)
             {
-                AdvanceSettings advWPF = new AdvanceSettings();
-                advWPF.Owner = Application.Current.MainWindow;
-                advWPF.Show();
+                if(CheckAccess == 1)
+                {
+                    AdvanceSettings advWPF = new AdvanceSettings();
+                    advWPF.Owner = Application.Current.MainWindow;
+                    advWPF.Show();
 
-                this.Close();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("u sussy bro?", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                
             }
             else
             {
                 MessageBox.Show("ur sussy","ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.Application.Current.Shutdown();
+
             }
         }
     }
