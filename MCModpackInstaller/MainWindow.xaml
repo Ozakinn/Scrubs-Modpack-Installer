@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:MCModpackInstaller"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
-        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Zombie_Hat.ico">
+        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico">
     <Grid>
 
         <Grid.Background>
             <VisualBrush>
                 <VisualBrush.Visual>
                     <hc:TransitioningContentControl>
-                        <hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="realisticMC.gif"/>
+                        <hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="Images/realisticMC.gif"/>
                     </hc:TransitioningContentControl>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -42,11 +42,11 @@
 
         <!-- Ozaki Logo / settings -->
         <Button Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent">
-            <Image Source="Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
+            <Image Source="Images/Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
         </Button>
 
         <!-- Installer Logo -->
-        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="mc modpack logo.png" HorizontalAlignment="Center" Margin="0,20,0,0" Width="auto" Height="75"></Image>
+        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="Images/mc modpack logo.png" HorizontalAlignment="Center" Margin="0,20,0,0" Width="auto" Height="75"></Image>
 
         <!-- Step 1 -->
         <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Content="Select Modpack / Version" Padding="10,10" Margin="0" LineStroke="Khaki" FontWeight="Bold" FontSize="14" Foreground="Khaki"/>

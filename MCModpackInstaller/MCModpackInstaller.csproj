@@ -99,31 +99,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Ozaki logo.png" />
+    <Resource Include="Images\Ozaki logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mc modpack logo.png" />
+    <Resource Include="Images\mc modpack logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="sample.gif" />
+    <Resource Include="Images\realisticMC.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="nc.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="landscape.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="cropwaterflow.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="pig twrek.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="realisticMC.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Zombie_Hat.ico" />
+    <Resource Include="Images\Zombie_Hat.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
