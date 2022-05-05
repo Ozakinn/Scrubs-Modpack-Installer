@@ -57,15 +57,18 @@
             </StackPanel>
         </Border>
 
-        <!-- Step 1 -->
+        <!-- Step 2 -->
         <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Content="Installation Path" Padding="10,10" Margin="0" LineStroke="Khaki" FontWeight="Bold" FontSize="14" Foreground="Khaki"/>
         <Border Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" Width="350" Height="90" CornerRadius="10" Margin="5" Background="White" Opacity="0.8">
+            
             <StackPanel>
+                <!-- Auto and Manual Radio -->
                 <hc:ButtonGroup Margin="10">
                     <RadioButton Content="Auto" IsChecked="True" Style="{StaticResource RadioGroupItemHorizontalFirst}"/>
                     <RadioButton Content="Manual" Style="{StaticResource RadioGroupItemHorizontalLast}"/>
                 </hc:ButtonGroup>
 
+                <!-- Manual Path -->
                 <WrapPanel HorizontalAlignment="Center">
                     <TextBox hc:InfoElement.Placeholder="Enter your custom '.minecraft' path" Style="{StaticResource TextBoxExtend}" Width="275"/>
                     <Button Content="..." Style="{StaticResource ButtonDefault}"></Button>
@@ -75,7 +78,7 @@
             
         </Border>
 
-
+        <!-- Install and Exit Buttons -->
         <WrapPanel Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" HorizontalAlignment="Center">
             <Button Style="{StaticResource ButtonSuccess}" Content="Install" Margin="20" Width="100"></Button>
             <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="20" Width="100" Click="btnExit_Click"></Button>
