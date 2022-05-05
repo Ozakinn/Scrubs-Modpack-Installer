@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MCModpackInstaller"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d"
         Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico">
     <Grid>
@@ -13,7 +14,13 @@
             <VisualBrush>
                 <VisualBrush.Visual>
                     <hc:TransitioningContentControl>
-                        <hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="Images/realisticMC.gif"/>
+
+                        <!-- New and no error log-->
+                        <Image gif:ImageBehavior.AnimatedSource="Images/realisticMC.gif" />
+                        
+                        <!-- this is old but works-->
+                        <!--<hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="Images/realisticMC.gif"/>-->
+                        
                     </hc:TransitioningContentControl>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -41,7 +48,7 @@
         </Grid.RowDefinitions>
 
         <!-- Ozaki Logo / settings -->
-        <Button Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent">
+        <Button x:Name="btnOzaki" Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent">
             <Image Source="Images/Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
         </Button>
 
