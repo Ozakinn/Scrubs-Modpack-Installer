@@ -44,8 +44,9 @@ namespace MCModpackInstaller
             ozakiClickCount++;
             if (ozakiClickCount == 10)
             {
-                AdvanceSettings advWPF = new AdvanceSettings();
-                advWPF.Show();
+                AccessRequired accessReqWPF = new AccessRequired();
+                accessReqWPF.Owner = Application.Current.MainWindow;
+                accessReqWPF.Show();
             }
         }
     }
