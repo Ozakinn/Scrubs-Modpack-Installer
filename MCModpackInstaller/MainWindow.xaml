@@ -7,7 +7,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
-        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico" WindowStartupLocation="CenterScreen">
+        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
     <Grid>
 
         <Grid.Background>
@@ -16,7 +16,7 @@
                     <hc:TransitioningContentControl>
 
                         <!-- This should be fine now. no error and less ram usage  -->
-                        <Image gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" />
+                        <Image x:Name="bgGIF" gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" />
 
                         <!-- No error, but high RAM usage  -->
                         <!--<Image gif:ImageBehavior.AnimatedSource="Images/realisticMC.gif" />-->

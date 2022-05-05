@@ -9,9 +9,13 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using XamlAnimatedGif;
+using Google.Cloud.Firestore;
+using DocumentReference = Google.Cloud.Firestore.DocumentReference;
 
 namespace MCModpackInstaller
 {
@@ -20,7 +24,12 @@ namespace MCModpackInstaller
     /// </summary>
     public partial class MainWindow : Window
     {
+        Credentials.secrets cSecret = new Credentials.secrets();
+        FirestoreDb database;
+
         int ozakiClickCount = 0;
+        int ConnectionStat;
+
 
         public MainWindow()
         {
@@ -48,6 +57,42 @@ namespace MCModpackInstaller
                 accessReqWPF.Owner = Application.Current.MainWindow;
                 accessReqWPF.Show();
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            connectionStatus();
+            if (ConnectionStat == 1)
+            {
+                SaveDB();
+            }
+        }
+
+        public void connectionStatus()
+        {
+            ConnectionStat = cSecret.ConString();
+
+            if (ConnectionStat == 1)
+            {
+                // Success
+                // Background Image should continue to loop
+                database = cSecret.db;
+            }
+            else
+            {
+                AnimationBehavior.SetRepeatBehavior(bgGIF, new RepeatBehavior(TimeSpan.Zero));
+            }
+        }
+
+        public void SaveDB()
+        {
+            DocumentReference doc = database.Collection("Settings").Document("Maintenance");
+            Dictionary<string, object> data1 = new Dictionary<string, object>()
+            {
+                {"fname","ler"}
+            };
+            doc.SetAsync(data1);
+            MessageBox.Show("check ur DB");
         }
     }
 }
