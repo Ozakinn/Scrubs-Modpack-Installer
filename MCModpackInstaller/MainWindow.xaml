@@ -51,7 +51,7 @@
         </Grid.RowDefinitions>
 
         <!-- Ozaki Logo / settings -->
-        <Button x:Name="btnOzaki" Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent">
+        <Button x:Name="btnOzaki" Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent" Click="btnOzaki_Click">
             <Image Source="Images/Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
         </Button>
 
