@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using XamlAnimatedGif;
 using Google.Cloud.Firestore;
 using DocumentReference = Google.Cloud.Firestore.DocumentReference;
+using System.Diagnostics;
 
 namespace MCModpackInstaller
 {
@@ -64,10 +65,12 @@ namespace MCModpackInstaller
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            
             connectionStatus();
             if (ConnectionStat == 1)
             {
-                //SaveDB();
+                //Allow Main window to load and initialize first for optimal user usage
+                Task loadMainWindow = mainWindowDelay();
             }
         }
 
@@ -83,7 +86,12 @@ namespace MCModpackInstaller
             }
             else
             {
+                // STOP GIF ANIMATION IF DB DISCONNECT
                 //AnimationBehavior.SetRepeatBehavior(bgGIF, new RepeatBehavior(TimeSpan.Zero));
+
+                //BG VIDEO ANIMATION STOP IF DB DISCONNECT
+                bgVideo.Source = null;
+                bgVideo.Stop();
             }
         }
 
@@ -102,6 +110,15 @@ namespace MCModpackInstaller
         {
             bgVideo.Position = new TimeSpan(0, 0, 1);
             bgVideo.Play();
+        }
+
+
+        //This delay allow MainWindow to initialize for optimal usage
+        async Task mainWindowDelay()
+        {
+            this.Visibility = Visibility.Hidden;
+            await Task.Delay(2000);
+            this.Visibility = Visibility.Visible;
         }
     }
 }

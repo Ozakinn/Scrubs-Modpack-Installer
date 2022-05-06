@@ -7,30 +7,34 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
-        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
+        
+        
+        >
+
+    <Window.Background>
+        <VisualBrush>
+            <VisualBrush.Visual>
+
+                <!-- This is Video BG, replaced GIF due to low FPS showcase  -->
+                <MediaElement x:Name="bgVideo" Source="Images/realisticmc.avi" Volume="0" IsMuted="True" MediaEnded="bgVideo_MediaEnded" UnloadedBehavior="Manual"></MediaElement>
+
+                <!-- This should be fine now. no error and less ram usage  -->
+                <!-- <Image x:Name="bgGIF" gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" /> -->
+
+                <!-- No error, but high RAM usage  -->
+                <!--<Image gif:ImageBehavior.AnimatedSource="Images/realisticMC.gif" />-->
+
+                <!-- this is old but works-->
+                <!--<hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="Images/realisticMC.gif"/>-->
+
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Background>
+
     <Grid>
 
-        <Grid.Background>
-            <VisualBrush>
-                <VisualBrush.Visual>
-                    <hc:TransitioningContentControl>
-
-                        <!-- This is Video BG, replaced GIF due to low FPS showcase  -->
-                        <MediaElement x:Name="bgVideo" Source="Images/realisticmc.avi" Volume="0" IsMuted="True" MediaEnded="bgVideo_MediaEnded" UnloadedBehavior="Manual"></MediaElement>
-                    
-                        <!-- This should be fine now. no error and less ram usage  -->
-                        <!-- <Image x:Name="bgGIF" gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" /> -->
-
-                        <!-- No error, but high RAM usage  -->
-                        <!--<Image gif:ImageBehavior.AnimatedSource="Images/realisticMC.gif" />-->
-                        
-                        <!-- this is old but works-->
-                        <!--<hc:GifImage x:Name="GifImageMain" Stretch="None" Height="auto" Width="1080" Uri="Images/realisticMC.gif"/>-->
-                        
-                    </hc:TransitioningContentControl>
-                </VisualBrush.Visual>
-            </VisualBrush>
-        </Grid.Background>
+        
 
         <!-- Setup columns -->
         <Grid.ColumnDefinitions>
