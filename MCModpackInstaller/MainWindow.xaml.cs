@@ -40,7 +40,10 @@ namespace MCModpackInstaller
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
+            {
                 this.DragMove();
+            }
+                
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
@@ -64,7 +67,7 @@ namespace MCModpackInstaller
             connectionStatus();
             if (ConnectionStat == 1)
             {
-                SaveDB();
+                //SaveDB();
             }
         }
 
