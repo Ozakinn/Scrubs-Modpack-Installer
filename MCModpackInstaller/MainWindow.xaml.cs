@@ -83,7 +83,7 @@ namespace MCModpackInstaller
             }
             else
             {
-                AnimationBehavior.SetRepeatBehavior(bgGIF, new RepeatBehavior(TimeSpan.Zero));
+                //AnimationBehavior.SetRepeatBehavior(bgGIF, new RepeatBehavior(TimeSpan.Zero));
             }
         }
 
@@ -96,6 +96,12 @@ namespace MCModpackInstaller
             };
             doc.SetAsync(data1);
             MessageBox.Show("check ur DB");
+        }
+
+        private void bgVideo_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            bgVideo.Position = new TimeSpan(0, 0, 1);
+            bgVideo.Play();
         }
     }
 }

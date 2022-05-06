@@ -15,8 +15,11 @@
                 <VisualBrush.Visual>
                     <hc:TransitioningContentControl>
 
+                        <!-- This is Video BG, replaced GIF due to low FPS showcase  -->
+                        <MediaElement x:Name="bgVideo" Source="Images/realisticmc.avi" Volume="0" IsMuted="True" MediaEnded="bgVideo_MediaEnded" UnloadedBehavior="Manual"></MediaElement>
+                    
                         <!-- This should be fine now. no error and less ram usage  -->
-                        <Image x:Name="bgGIF" gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" />
+                        <!-- <Image x:Name="bgGIF" gif:AnimationBehavior.SourceUri="Images/realisticMC.gif" /> -->
 
                         <!-- No error, but high RAM usage  -->
                         <!--<Image gif:ImageBehavior.AnimatedSource="Images/realisticMC.gif" />-->
