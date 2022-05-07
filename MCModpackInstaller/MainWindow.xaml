@@ -7,8 +7,13 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
-        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400" ResizeMode="NoResize" WindowStyle="None" MouseDown="Window_MouseDown" Icon="Images/Zombie_Hat.ico" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded"
-        
+        Title="Scrubs Modpack Installer | Ozaki" Height="550" Width="400"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        MouseDown="Window_MouseDown"
+        Icon="Images/Zombie_Hat.ico"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
         
         >
 
@@ -69,8 +74,8 @@
         <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Content="Select Modpack / Version" Padding="10,10" Margin="0" LineStroke="Khaki" FontWeight="Bold" FontSize="14" Foreground="Khaki"/>
         <Border Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Width="350" Height="130" CornerRadius="5" Margin="5" Background="Gainsboro" Opacity="0.8">
             <StackPanel>
-                <ComboBox hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Modpack:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black"/>
-                <ComboBox hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Version:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black"/>
+                <ComboBox x:Name="cboModpack" hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Modpack:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black" SelectionChanged="cboModpack_SelectionChanged"/>
+                <ComboBox x:Name="cboVersion" hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Version:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black" SelectionChanged="cboVersion_SelectionChanged"/>
             </StackPanel>
         </Border>
 
@@ -81,14 +86,14 @@
             <StackPanel>
                 <!-- Auto and Manual Radio -->
                 <hc:ButtonGroup Margin="10">
-                    <RadioButton Content="Auto" IsChecked="True" Style="{StaticResource RadioGroupItemHorizontalFirst}"/>
-                    <RadioButton Content="Manual" Style="{StaticResource RadioGroupItemHorizontalLast}"/>
+                    <RadioButton x:Name="rdAuto" Content="Auto" Style="{StaticResource RadioGroupItemHorizontalFirst}" Checked="rdAuto_Checked"/>
+                    <RadioButton x:Name="rdManual" Content="Manual" Style="{StaticResource RadioGroupItemHorizontalLast}" Checked="rdManual_Checked"/>
                 </hc:ButtonGroup>
 
                 <!-- Manual Path -->
                 <WrapPanel HorizontalAlignment="Center">
-                    <TextBox hc:InfoElement.Placeholder="Enter your custom '.minecraft' path" Style="{StaticResource TextBoxExtend}" Width="275"/>
-                    <Button Content="..." Style="{StaticResource ButtonDefault}"></Button>
+                    <TextBox x:Name="txtCustomPath" hc:InfoElement.Placeholder="Enter your custom '.minecraft' path" Style="{StaticResource TextBoxExtend}" Width="275"/>
+                    <Button x:Name="btnSelectPath" Content="..." Style="{StaticResource ButtonDefault}"></Button>
                 </WrapPanel>
 
             </StackPanel>
@@ -97,7 +102,7 @@
 
         <!-- Install and Exit Buttons -->
         <WrapPanel Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-            <Button Style="{StaticResource ButtonSuccess}" Content="Install" Margin="20" Width="100"></Button>
+            <Button x:Name="btnInstall" Style="{StaticResource ButtonSuccess}" Content="Install" Margin="20" Width="100"></Button>
             <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="20" Width="100" Click="btnExit_Click"></Button>
         </WrapPanel>
 
