@@ -20,6 +20,12 @@ using System.Diagnostics;
 using System.IO;
 using Path = System.IO.Path;
 using System.Collections;
+using System.Net;
+using System.Threading;
+using HtmlAgilityPack;
+using System.ComponentModel;
+using Ionic.Zip;
+using System.Windows.Threading;
 
 namespace MCModpackInstaller
 {
@@ -40,15 +46,47 @@ namespace MCModpackInstaller
         List<string> versionData = new List<string>();
 
         string link;
-        string mcversion;
+        string versionmodpackDB;
+
+        string sSelectedPath = "";
+
+        string tempPath = Path.GetTempPath();
+        string dlPath;
+        string minecraftPathDefault = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"\\.minecraft";
+        string extractPath;
+
+        int installNExtractingProgress = 0;
+
+        int errorLog = 0;
 
 
+        WebClient webClient = new WebClient();
+
+
+
+
+        //Set the maximum vaue to int.MaxValue, thus, it could be more accurate
+
+
+        private BackgroundWorker extractFile;
+        private long fileSize;    //the size of the zip file
+        private long extractedSizeTotal;    //the bytes total extracted
+        private long compressedSize;    //the size of a single compressed file
+        private string compressedFileName;    //the name of the file being extracted
+
+        int fileindex;
+        int fileamount;
+        string filenameInZip;
 
 
         public MainWindow()
         {
             InitializeComponent();
-            
+            extractFile = new BackgroundWorker();
+            extractFile.DoWork += ExtractFile_DoWork;
+            extractFile.ProgressChanged += ExtractFile_ProgressChanged;
+            extractFile.RunWorkerCompleted += ExtractFile_RunWorkerCompleted;
+            extractFile.WorkerReportsProgress = true;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -62,7 +100,14 @@ namespace MCModpackInstaller
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            if (installNExtractingProgress == 1)
+            {
+                MessageBox.Show("");
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void btnOzaki_Click(object sender, RoutedEventArgs e)
@@ -78,12 +123,10 @@ namespace MCModpackInstaller
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
             connectionStatus();
             if (ConnectionStat == 1)
             {
                 disableTextbox();
-
 
 
                 Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
@@ -158,7 +201,6 @@ namespace MCModpackInstaller
             cboModpack.IsEnabled = true;
             cboVersion.IsEnabled = true;
 
-            rdAuto.IsChecked = true;
             rdAuto.IsEnabled = true;
             rdManual.IsEnabled = true;
 
@@ -258,10 +300,10 @@ namespace MCModpackInstaller
             {
                 //get data from list to string
                 link = versionData[0];
-                mcversion = versionData[1];
+                versionmodpackDB = versionData[1];
 
 
-                if (!string.IsNullOrEmpty(link))
+                if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(versionmodpackDB))
                 {
                     rdAuto.IsChecked = true;
                     rdAuto.IsEnabled = true;
@@ -360,6 +402,265 @@ namespace MCModpackInstaller
 
         }
 
+        private void btnSelectPath_Click(object sender, RoutedEventArgs e)
+        {
+            
+            System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
+            fbd.Description = "Select your custom path of minecraft folder\nUsually it is named '.minecraft' folder.";
+
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                sSelectedPath = fbd.SelectedPath;
+            }
+
+            txtCustomPath.Text = sSelectedPath;
+        }
+
+        private void btnInstall_Click(object sender, RoutedEventArgs e)
+        {
+            dlink();
+        }
+
+        public void dlink()
+        {
+
+            string folderpath = tempPath + @"ScrubsInstaller\Modpack\" + selectedModpack;
+            string filename = versionmodpackDB+".zip";
+
+            dlPath = folderpath + "\\"+ filename;
+
+            webClient.CancelAsync(); // cancel previous async download
+
+            
+            if (File.Exists(dlPath) == true)
+            {
+                setExtractPath();
+            }
+            else
+            {
+                MessageBox.Show("download started");
+
+                /*
+                this.Dispatcher.Invoke(() =>
+                {
+                    disableTextbox();
+
+                    progressBarCTRL.Maximum = 100;
+
+                    lblProgressBar.Text = "Downloading " + selectedModpackVersion + "...";
+                    panelProgress.Visibility = Visibility.Visible;
+
+                    System.IO.Directory.CreateDirectory(tempPath);
+                    
+                });
+                */
+
+                disableTextbox();
+
+                progressBarCTRL.Maximum = 100;
+
+                lblProgressBar.Text = "Downloading " + selectedModpackVersion + "...";
+                panelProgress.Visibility = Visibility.Visible;
+
+                System.IO.Directory.CreateDirectory(tempPath);
+
+                //this are sample of direct link
+                // for debug purposes
+                //string dropbox = "https://www.dropbox.com/s/fodvhb1vsgxbm0x/v8-cs-scrubs-bmc.zip?dl=1";
+                //string gdrive = "https://drive.google.com/uc?export=download&id=1ZczgIrqi1u5gqsoRUn6tQJcoM_X0QNTy&confirm=t";
+                //string odrive = "https://stamariasti-my.sharepoint.com/:u:/g/personal/cataniag_138704_stamaria_sti_edu_ph/Eavcbd5ZfltEnDi8uOWPQOABA6SVBmwGfVKc56sXrfW0lg?e=rQDaYC&download=1";
+
+                webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36");
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                //webClient.Credentials = CredentialCache.DefaultNetworkCredentials;
+
+                webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                webClient.DownloadFileAsync(new Uri(link), dlPath);
+
+
+            }
+        }
+
+        public void setExtractPath()
+        {
+            //This should detect the radio button AUTO AND INSTALL PATH
+            if (rdAuto.IsChecked == true)
+            {
+                extractPath = minecraftPathDefault;
+            }
+            else
+            {
+                extractPath = txtCustomPath.Text;
+            }
+
+            string extractPathMods = extractPath + @"\mods";
+            string extractPathConfig = extractPath + @"\config";
+
+            System.IO.DirectoryInfo modspath = new DirectoryInfo(extractPathMods);
+            System.IO.DirectoryInfo configpath = new DirectoryInfo(extractPathConfig);
+
+            //delete mods folder content if exist
+            if (Directory.Exists(extractPathMods))
+            {
+                foreach (FileInfo file in modspath.GetFiles())
+                {
+                    file.Delete();
+                }
+            }
+
+            //delete config folder content if exist
+            if (Directory.Exists(extractPathConfig))
+            {
+                foreach (FileInfo file in configpath.GetFiles())
+                {
+                    file.Delete();
+                }
+            }
+
+            if (rdManual.IsChecked == true && String.IsNullOrWhiteSpace(txtCustomPath.Text) == true)
+            {
+                MessageBox.Show("Please select a custom path");
+            }
+            else if (rdAuto.IsChecked == true)
+            {
+                disableTextbox();
+                progressBarCTRL.Maximum = int.MaxValue;
+                panelProgress.Visibility = Visibility.Visible;
+                extractFile.RunWorkerAsync();
+            }
+            else
+            {
+                if (Directory.Exists(txtCustomPath.Text))
+                {
+                    disableTextbox();
+                    progressBarCTRL.Maximum = int.MaxValue;
+                    panelProgress.Visibility = Visibility.Visible;
+                    extractFile.RunWorkerAsync();
+                }
+                else
+                {
+                    MessageBox.Show("Folder did not exist. Select custom path again.");
+                }
+            }
+            
+        }
+
+
+        private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            /*
+            Dispatcher.BeginInvoke(
+            new ThreadStart(() => progressBarCTRL.Value = e.ProgressPercentage));
+            */
+            progressBarCTRL.Value = e.ProgressPercentage;
+        }
+
+        private void Completed(object sender, AsyncCompletedEventArgs e)
+        {
+            setExtractPath();
+        }
+
+        private void ExtractFile_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (errorLog == 1) // Error for ZipException
+            {
+                errorLog = 0; //reset Errorlog always
+                dlink();
+            }
+            else
+            {
+                //Set the maximum vaue to int.MaxValue because the process is completed
+                progressBarCTRL.Value = int.MaxValue;
+                lblProgressBar.Text = "(" + fileamount + "/" + fileamount + "): " + filenameInZip;
+                MessageBox.Show("Done!");
+                enableTextbox();
+            }
+        }
+
+        private void ExtractFile_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            lblProgressBar.Text = compressedFileName;
+
+            progressBarCTRL.Value = e.ProgressPercentage;
+
+            //calculate the totalPercent
+            long totalPercent = ((long)e.ProgressPercentage * compressedSize + extractedSizeTotal * int.MaxValue) / fileSize;
+            if (totalPercent > int.MaxValue)
+            {
+                totalPercent = int.MaxValue;
+            }
+            progressBarCTRL.Value = (int)totalPercent;
+        }
+
+        private void ExtractFile_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                string fileName = dlPath;
+                
+
+
+                //get the size of the zip file
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(fileName);
+                fileSize = fileInfo.Length;
+                using (Ionic.Zip.ZipFile zipFile = Ionic.Zip.ZipFile.Read(fileName))
+                {
+                    //reset the bytes total extracted to 0
+                    extractedSizeTotal = 0;
+                    int fileAmount = zipFile.Count;
+                    int fileIndex = 0;
+
+                    
+
+                    zipFile.ExtractProgress += Zip_ExtractProgress;
+                    foreach (Ionic.Zip.ZipEntry ZipEntry in zipFile)
+                    {
+                        fileIndex++;
+                        compressedFileName = "(" + fileIndex.ToString() + "/" + fileAmount + "): " + ZipEntry.FileName;
+                        //get the size of a single compressed file
+                        compressedSize = ZipEntry.CompressedSize;
+                        ZipEntry.Extract(extractPath, Ionic.Zip.ExtractExistingFileAction.OverwriteSilently);
+                        //calculate the bytes total extracted
+                        extractedSizeTotal += compressedSize;
+
+                        //custom addition
+                        fileindex = fileIndex;
+                        fileamount = fileAmount;
+                        filenameInZip = ZipEntry.FileName;
+                    }
+                }
+            }
+            catch (Ionic.Zip.ZipException)
+            {
+                //If file is bad or corrupted - it should start to redownload the file
+                errorLog = 1; // Error log zip exception
+
+                MessageBox.Show("It seems that the file is corrupted.");
+                File.Delete(dlPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void Zip_ExtractProgress(object sender, Ionic.Zip.ExtractProgressEventArgs e)
+        {
+            if (e.TotalBytesToTransfer > 0)
+            {
+                long percent = e.BytesTransferred * int.MaxValue / e.TotalBytesToTransfer;
+                //Console.WriteLine("Indivual: " + percent);
+                extractFile.ReportProgress((int)percent);
+            }
+        }
+
+
+
+
+
+
+
 
         // THIS IS A SAMPLE FOR RETRIEVING DATA
         /*
@@ -369,7 +670,7 @@ namespace MCModpackInstaller
             MessageBox.Show("t1");
             foreach (DocumentSnapshot use in Modpacks)
             {
-                
+
                 DocumentReference docref = database.Collection("Modpacks").Document("BMC").Collection("Fabric").Document("ModpackVersion");
                 DocumentSnapshot snap = await docref.GetSnapshotAsync();
                 MessageBox.Show("t2");
