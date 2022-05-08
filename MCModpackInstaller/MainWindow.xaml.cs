@@ -39,6 +39,8 @@ namespace MCModpackInstaller
 
         int ozakiClickCount = 0;
         int ConnectionStat;
+        string isMaintenance;
+        double CurrentVersion = 0.5;
 
         string selectedModpack;
         string selectedModpackVersion;
@@ -55,7 +57,6 @@ namespace MCModpackInstaller
         string minecraftPathDefault = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"\\.minecraft";
         string extractPath;
 
-        int installNExtractingProgress = 0;
 
         int errorLog = 0;
 
@@ -100,14 +101,8 @@ namespace MCModpackInstaller
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            if (installNExtractingProgress == 1)
-            {
-                MessageBox.Show("");
-            }
-            else
-            {
-                this.Close();
-            }
+            
+            this.Close();
         }
 
         private void btnOzaki_Click(object sender, RoutedEventArgs e)
@@ -121,23 +116,30 @@ namespace MCModpackInstaller
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
             connectionStatus();
-            if (ConnectionStat == 1)
+            isMaintenance = await cSecret.isMaintenanceAsync();
+            if (ConnectionStat == 1 && isMaintenance !="1")
             {
                 disableTextbox();
 
 
-                Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
-                Task populatemodpack = retrieveModpack(); //Populate Modpack selection
                 
+                Task populatemodpack = retrieveModpack(); //Populate Modpack selection
+
+            }
+            else if (isMaintenance == "1")
+            {
+                MaintenanceMode();
             }
         }
 
         public void connectionStatus()
         {
             ConnectionStat = cSecret.ConString();
+            
 
             if (ConnectionStat == 1)
             {
@@ -147,6 +149,12 @@ namespace MCModpackInstaller
 
                 //BG VIDEO ANIMATION PLAY IF DB CONNECTED
                 splayBGVideo();
+
+                //check if maintenance
+                //Task maintainance = isMaintenanceAsync();
+                //await Task.WhenAll(maintainance);
+
+
             }
             else
             {
@@ -155,6 +163,29 @@ namespace MCModpackInstaller
 
                 //BG VIDEO ANIMATION STOP IF DB DISCONNECT
                 stopBGVideo();
+            }
+        }
+
+        public async void MaintenanceMode()
+        {
+            disableTextbox();
+            panelMaintenance.Visibility = Visibility.Visible;
+
+            while (isMaintenance != "0")
+            {
+                isMaintenance = await cSecret.isMaintenanceAsync();
+            }
+            panelMaintenance.Visibility = Visibility.Hidden;
+            Task populatemodpack = retrieveModpack(); //Populate Modpack selection
+        }
+
+        public async void CheckVersion()
+        {
+            string isVersionString = await cSecret.VersionChecker();
+            double latestVersion = Convert.ToDouble(isVersionString);
+            if (CurrentVersion < latestVersion)
+            {
+
             }
         }
 
@@ -192,7 +223,7 @@ namespace MCModpackInstaller
         async Task mainWindowDelay()
         {
             this.Visibility = Visibility.Hidden;
-            await Task.Delay(2000);
+            await Task.Delay(3000);
             this.Visibility = Visibility.Visible;
         }
 
@@ -204,8 +235,16 @@ namespace MCModpackInstaller
             rdAuto.IsEnabled = true;
             rdManual.IsEnabled = true;
 
-            txtCustomPath.IsEnabled = true;
-            btnSelectPath.IsEnabled = true;
+            if (rdManual.IsChecked == true)
+            {
+                txtCustomPath.IsEnabled = true;
+                btnSelectPath.IsEnabled = true;
+            }
+            else
+            {
+                txtCustomPath.IsEnabled = false;
+                btnSelectPath.IsEnabled = false;
+            }
 
             btnInstall.IsEnabled = true;
             btnDeleteModpacks.IsEnabled = true;
@@ -361,12 +400,17 @@ namespace MCModpackInstaller
         private async void cboModpack_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             connectionStatus();
-            if (cboModpack.SelectedIndex >= 1 && ConnectionStat == 1)
+            isMaintenance = await cSecret.isMaintenanceAsync();
+            if (cboModpack.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1")
             {
                 selectedModpack = cboModpack.SelectedItem.ToString();
 
                 Task populateModpackVersion = retrieveModpackVersion();
                 await Task.WhenAll(populateModpackVersion);
+            }
+            else if (isMaintenance == "1")
+            {
+                MaintenanceMode();
             }
             else
             {
@@ -386,7 +430,8 @@ namespace MCModpackInstaller
             btnInstall.IsEnabled = false;
 
             connectionStatus();
-            if (cboVersion.SelectedIndex >= 1 && ConnectionStat == 1)
+            isMaintenance = await cSecret.isMaintenanceAsync();
+            if (cboVersion.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1")
             {
                 selectedModpackVersion = cboVersion.SelectedItem.ToString();
 
@@ -394,6 +439,10 @@ namespace MCModpackInstaller
                 //Task.WaitAll(retrieveModpackVersionData());
                 await Task.WhenAll(getVersionData);
 
+            }
+            else if (isMaintenance == "1")
+            {
+                MaintenanceMode();
             }
             else
             {
@@ -440,19 +489,29 @@ namespace MCModpackInstaller
             txtCustomPath.Text = sSelectedPath;
         }
 
-        private void btnInstall_Click(object sender, RoutedEventArgs e)
+        private async void btnInstall_Click(object sender, RoutedEventArgs e)
         {
-            lblProgressBar.HorizontalAlignment = HorizontalAlignment.Center; //revert back to original position
-            progressBarCTRL.Value = 0; //reset value back to 0
-
-            // Check if folder exist, if not do create
-            string folderpath = tempPath + @"ScrubsInstaller\Modpack\" + selectedModpack;
-            if (!Directory.Exists(folderpath))
+            connectionStatus();
+            isMaintenance = await cSecret.isMaintenanceAsync();
+            if (isMaintenance != "1")
             {
-                Directory.CreateDirectory(folderpath);
-            }
+                lblProgressBar.HorizontalAlignment = HorizontalAlignment.Center; //revert back to original position
+                progressBarCTRL.Value = 0; //reset value back to 0
 
-            dlink();
+                // Check if folder exist, if not do create
+                string folderpath = tempPath + @"ScrubsInstaller\Modpack\" + selectedModpack;
+                if (!Directory.Exists(folderpath))
+                {
+                    Directory.CreateDirectory(folderpath);
+                }
+
+                dlink();
+            }
+            else
+            {
+                MaintenanceMode();
+            }
+            
         }
 
         public void dlink()
@@ -488,30 +547,38 @@ namespace MCModpackInstaller
                     
                 });
                 */
+                bool checkUrl = UrlIsValid(link);
+                if (checkUrl == true)
+                {
+                    disableTextbox();
+                    btnDeleteModpacks.IsEnabled = false;
 
-                disableTextbox();
-                btnDeleteModpacks.IsEnabled = false;
+                    progressBarCTRL.Maximum = 100;
 
-                progressBarCTRL.Maximum = 100;
+                    lblProgressBar.Text = "Downloading " + selectedModpackVersion + "...";
+                    panelProgress.Visibility = Visibility.Visible;
 
-                lblProgressBar.Text = "Downloading " + selectedModpackVersion + "...";
-                panelProgress.Visibility = Visibility.Visible;
+                    System.IO.Directory.CreateDirectory(tempPath);
 
-                System.IO.Directory.CreateDirectory(tempPath);
+                    //this are sample of direct link
+                    // for debug purposes
+                    //string dropbox = "https://www.dropbox.com/s/fodvhb1vsgxbm0x/v8-cs-scrubs-bmc.zip?dl=1";
+                    //string gdrive = "https://drive.google.com/uc?export=download&id=1ZczgIrqi1u5gqsoRUn6tQJcoM_X0QNTy&confirm=t";
+                    //string odrive = "https://stamariasti-my.sharepoint.com/:u:/g/personal/cataniag_138704_stamaria_sti_edu_ph/Eavcbd5ZfltEnDi8uOWPQOABA6SVBmwGfVKc56sXrfW0lg?e=rQDaYC&download=1";
 
-                //this are sample of direct link
-                // for debug purposes
-                //string dropbox = "https://www.dropbox.com/s/fodvhb1vsgxbm0x/v8-cs-scrubs-bmc.zip?dl=1";
-                //string gdrive = "https://drive.google.com/uc?export=download&id=1ZczgIrqi1u5gqsoRUn6tQJcoM_X0QNTy&confirm=t";
-                //string odrive = "https://stamariasti-my.sharepoint.com/:u:/g/personal/cataniag_138704_stamaria_sti_edu_ph/Eavcbd5ZfltEnDi8uOWPQOABA6SVBmwGfVKc56sXrfW0lg?e=rQDaYC&download=1";
+                    webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36");
+                    webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                    //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    //webClient.Credentials = CredentialCache.DefaultNetworkCredentials;
 
-                webClient.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36");
-                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
-                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //webClient.Credentials = CredentialCache.DefaultNetworkCredentials;
-
-                webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-                webClient.DownloadFileAsync(new Uri(link), dlPath);
+                    webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                    webClient.DownloadFileAsync(new Uri(link), dlPath);
+                }
+                else
+                {
+                    MessageBox.Show("The download link just died.\nPlease try again.","Try again...",MessageBoxButton.OK,MessageBoxImage.Warning);
+                }
+                
 
 
             }
@@ -582,7 +649,6 @@ namespace MCModpackInstaller
             }
             
         }
-
 
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {

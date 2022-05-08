@@ -39,6 +39,7 @@
 
     <Window.Resources>
         <SolidColorBrush x:Key="TransparentBorder" Color="#DCDCDC" Opacity="0.8" />
+        <SolidColorBrush x:Key="TransparentMaintenance" Color="#FF474747" Opacity="0.9" />
     </Window.Resources>
 
     <Grid>
@@ -73,7 +74,7 @@
         </Button>
 
         <!-- Installer Logo -->
-        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="Images/mc modpack logo.png" HorizontalAlignment="Center" Margin="0,10,0,0" Width="auto" Height="75"></Image>
+        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" ToolTip="Developed by Ozaki | May 2022" Source="Images/mc modpack logo.png" HorizontalAlignment="Center" Margin="0,10,0,0" Width="auto" Height="75"></Image>
 
 
         <!-- Step 1 -->
@@ -93,8 +94,8 @@
             <StackPanel>
                 <!-- Auto and Manual Radio -->
                 <hc:ButtonGroup Margin="10">
-                    <RadioButton x:Name="rdAuto" Content="Auto" Style="{StaticResource RadioGroupItemHorizontalFirst}" Checked="rdAuto_Checked"/>
-                    <RadioButton x:Name="rdManual" Content="Manual" Style="{StaticResource RadioGroupItemHorizontalLast}" Checked="rdManual_Checked"/>
+                    <RadioButton x:Name="rdAuto" Content="Auto" ToolTip="Default '.minecraft' folder path" Style="{StaticResource RadioGroupItemHorizontalFirst}" Checked="rdAuto_Checked"/>
+                    <RadioButton x:Name="rdManual" Content="Manual" ToolTip="Custom installation folder path" Style="{StaticResource RadioGroupItemHorizontalLast}" Checked="rdManual_Checked"/>
                 </hc:ButtonGroup>
 
                 <!-- Manual Path -->
@@ -117,7 +118,7 @@
 
         <!-- Install and Exit Buttons -->
         <WrapPanel x:Name="panelInstallExit" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <Button x:Name="btnInstall" Style="{StaticResource ButtonSuccess}" Content="Install" Margin="0,0,20,0" Width="100" Click="btnInstall_Click"></Button>
+            <Button x:Name="btnInstall" Style="{StaticResource ButtonSuccess}" Content="Install" ToolTip="Start download or Install of selected Modpack Version" Margin="0,0,20,0" Width="100" Click="btnInstall_Click"></Button>
             <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="20,0,0,0" Width="100" Click="btnExit_Click"></Button>
         </WrapPanel>
 
@@ -127,6 +128,17 @@
             <Button x:Name="btnDeleteModpacks" Width="auto" Height="25" Padding="5,0" Margin="5" FontSize="11" ToolTip="Delete all downloaded modpacks" Content="🗑️" Style="{StaticResource ButtonWarning.Small}" Click="btnDeleteModpacks_Click" />
         </WrapPanel>
 
+        <!-- Maintenance Mode  -->
+        <Border x:Name="panelMaintenance" Width="auto" CornerRadius="0" Background="{StaticResource TransparentMaintenance}" Grid.ColumnSpan="5" Grid.RowSpan="9" Visibility="Hidden">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <hc:LoadingCircle/>
+
+                <TextBlock Margin="10" TextWrapping="Wrap" Text="Working on it..." Style="{StaticResource TextBlockTitleBold}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <TextBlock Margin="20,0,20,50" TextWrapping="Wrap" Text="Sorry, the system is down for maintenance. Try again in a few minutes." Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <Button Style="{StaticResource ButtonDanger}" Content="Close" Margin="5" Width="100" Click="btnExit_Click"></Button>
+
+            </StackPanel>
+        </Border>
 
 
     </Grid>
