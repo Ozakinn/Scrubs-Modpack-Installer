@@ -208,6 +208,7 @@ namespace MCModpackInstaller
             btnSelectPath.IsEnabled = true;
 
             btnInstall.IsEnabled = true;
+            btnDeleteModpacks.IsEnabled = true;
         }
 
         public void disableTextbox()
@@ -305,14 +306,31 @@ namespace MCModpackInstaller
 
                 if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(versionmodpackDB))
                 {
-                    rdAuto.IsChecked = true;
-                    rdAuto.IsEnabled = true;
-                    rdManual.IsEnabled = true;
 
-                    txtCustomPath.IsEnabled = false;
-                    btnSelectPath.IsEnabled = false;
+                    bool checkUrl = UrlIsValid(link);
+                    if (checkUrl == true)
+                    {
+                        rdAuto.IsChecked = true;
+                        rdAuto.IsEnabled = true;
+                        rdManual.IsEnabled = true;
 
-                    btnInstall.IsEnabled = true;
+                        txtCustomPath.IsEnabled = false;
+                        btnSelectPath.IsEnabled = false;
+
+                        btnInstall.IsEnabled = true;
+                    }
+                    else
+                    {
+                        disableTextbox();
+
+                        cboModpack.IsEnabled = true;
+                        cboVersion.IsEnabled = true;
+
+                        MessageBox.Show("Link is broken or dead. Please report it to Admin.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+
+
                 }
                 else
                 {
@@ -360,6 +378,12 @@ namespace MCModpackInstaller
 
         private async void cboVersion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //Disable Installation path control on change to avoid fast click of install
+            rdAuto.IsEnabled = false;
+            rdManual.IsEnabled = false;
+            txtCustomPath.IsEnabled = false;
+            btnSelectPath.IsEnabled = false;
+            btnInstall.IsEnabled = false;
 
             connectionStatus();
             if (cboVersion.SelectedIndex >= 1 && ConnectionStat == 1)
@@ -418,6 +442,16 @@ namespace MCModpackInstaller
 
         private void btnInstall_Click(object sender, RoutedEventArgs e)
         {
+            lblProgressBar.HorizontalAlignment = HorizontalAlignment.Center; //revert back to original position
+            progressBarCTRL.Value = 0; //reset value back to 0
+
+            // Check if folder exist, if not do create
+            string folderpath = tempPath + @"ScrubsInstaller\Modpack\" + selectedModpack;
+            if (!Directory.Exists(folderpath))
+            {
+                Directory.CreateDirectory(folderpath);
+            }
+
             dlink();
         }
 
@@ -438,7 +472,7 @@ namespace MCModpackInstaller
             }
             else
             {
-                MessageBox.Show("download started");
+                //MessageBox.Show("download started");
 
                 /*
                 this.Dispatcher.Invoke(() =>
@@ -456,6 +490,7 @@ namespace MCModpackInstaller
                 */
 
                 disableTextbox();
+                btnDeleteModpacks.IsEnabled = false;
 
                 progressBarCTRL.Maximum = 100;
 
@@ -525,6 +560,7 @@ namespace MCModpackInstaller
             else if (rdAuto.IsChecked == true)
             {
                 disableTextbox();
+                btnDeleteModpacks.IsEnabled = false;
                 progressBarCTRL.Maximum = int.MaxValue;
                 panelProgress.Visibility = Visibility.Visible;
                 extractFile.RunWorkerAsync();
@@ -534,6 +570,7 @@ namespace MCModpackInstaller
                 if (Directory.Exists(txtCustomPath.Text))
                 {
                     disableTextbox();
+                    btnDeleteModpacks.IsEnabled = false;
                     progressBarCTRL.Maximum = int.MaxValue;
                     panelProgress.Visibility = Visibility.Visible;
                     extractFile.RunWorkerAsync();
@@ -571,15 +608,19 @@ namespace MCModpackInstaller
             else
             {
                 //Set the maximum vaue to int.MaxValue because the process is completed
+                //reset back to center position
+                lblProgressBar.HorizontalAlignment = HorizontalAlignment.Center;
                 progressBarCTRL.Value = int.MaxValue;
-                lblProgressBar.Text = "(" + fileamount + "/" + fileamount + "): " + filenameInZip;
-                MessageBox.Show("Done!");
+                lblProgressBar.Text = "(" + fileamount + "/" + fileamount + "): Installation Complete!";
+                //MessageBox.Show("Done!");
                 enableTextbox();
+                btnDeleteModpacks.IsEnabled = true;
             }
         }
 
         private void ExtractFile_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            lblProgressBar.HorizontalAlignment = HorizontalAlignment.Left;
             lblProgressBar.Text = compressedFileName;
 
             progressBarCTRL.Value = e.ProgressPercentage;
@@ -636,7 +677,8 @@ namespace MCModpackInstaller
                 //If file is bad or corrupted - it should start to redownload the file
                 errorLog = 1; // Error log zip exception
 
-                MessageBox.Show("It seems that the file is corrupted.");
+                //MessageBox.Show("It seems that the file is corrupted.");
+
                 File.Delete(dlPath);
             }
             catch (Exception ex)
@@ -655,8 +697,77 @@ namespace MCModpackInstaller
             }
         }
 
+        private void btnViewModpacks_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", tempPath + @"ScrubsInstaller\Modpack\");
+        }
+
+        private void btnDeleteModpacks_Click(object sender, RoutedEventArgs e)
+        {
+            string deleteModpackPath = tempPath + @"\ScrubsInstaller\Modpack";
+            System.IO.DirectoryInfo modpackpath = new DirectoryInfo(deleteModpackPath);
+
+            if (Directory.Exists(deleteModpackPath))
+            {
+                foreach (DirectoryInfo dir in modpackpath.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+
+                foreach (FileInfo file in modpackpath.GetFiles())
+                {
+                    file.Delete();
+                }
+
+                MessageBox.Show("All modpacks is now deleted.");
+            }
+            else
+            {
+                MessageBox.Show("Folder did not exist or is already deleted.");
+            }
+        }
 
 
+        public bool UrlIsValid(string url)
+        {
+            try
+            {
+                HttpWebRequest request = HttpWebRequest.Create(url) as HttpWebRequest;
+                request.Timeout = 5000; //set the timeout to 5 seconds to keep the user from waiting too long for the page to load
+                request.Method = "HEAD"; //Get only the header information -- no need to download any content
+
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                {
+                    int statusCode = (int)response.StatusCode;
+                    if (statusCode >= 100 && statusCode < 400) //Good requests
+                    {
+                        return true;
+                    }
+                    else if (statusCode >= 500 && statusCode <= 510) //Server Errors
+                    {
+                        //log.Warn(String.Format("The remote server has thrown an internal error. Url is not valid: {0}", url));
+                        Debug.WriteLine(String.Format("The remote server has thrown an internal error. Url is not valid: {0}", url));
+                        return false;
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError) //400 errors
+                {
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(String.Format("Unhandled status [{0}] returned for url: {1}", ex.Status, url), ex.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Could not test url {0}.", url), ex.ToString());
+            }
+            return false;
+        }
 
 
 

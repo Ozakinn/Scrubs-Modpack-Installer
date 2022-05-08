@@ -43,7 +43,7 @@
 
     <Grid>
 
-        
+
 
         <!-- Setup columns -->
         <Grid.ColumnDefinitions>
@@ -68,26 +68,28 @@
         </Grid.RowDefinitions>
 
         <!-- Ozaki Logo / settings -->
-        <Button x:Name="btnOzaki" Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,15,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent" Click="btnOzaki_Click">
+        <Button x:Name="btnOzaki" Grid.Column="1" Grid.Row="0" BorderThickness="0" Height="50" Width="auto" Grid.ColumnSpan="3" Padding="6" Grid.RowSpan="2" Margin="132,5,132,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Transparent" Click="btnOzaki_Click">
             <Image Source="Images/Ozaki logo.png" Width="auto" Height="auto" VerticalAlignment="Top"/>
         </Button>
 
         <!-- Installer Logo -->
-        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="Images/mc modpack logo.png" HorizontalAlignment="Center" Margin="0,20,0,0" Width="auto" Height="75"></Image>
+        <Image Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="1" Source="Images/mc modpack logo.png" HorizontalAlignment="Center" Margin="0,10,0,0" Width="auto" Height="75"></Image>
+
 
         <!-- Step 1 -->
         <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="2" Content="Select Modpack / Version" Padding="10,10" Margin="0" LineStroke="#FF787878" FontWeight="Bold" FontSize="14" Foreground="White"/>
-        <Border Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Width="350" Height="130" CornerRadius="5" Margin="5" Background="{StaticResource TransparentBorder}">
-            <StackPanel>
+        <Border Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Width="350" Height="145" CornerRadius="5" Margin="5" Background="{StaticResource TransparentBorder}">
+            <StackPanel Margin="0,15,0,0">
                 <ComboBox x:Name="cboModpack" hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Modpack:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black" SelectionChanged="cboModpack_SelectionChanged"/>
                 <ComboBox x:Name="cboVersion" hc:DropDownElement.ConsistentWidth="False" SelectedIndex="0" hc:InfoElement.Title="Select Version:" Style="{StaticResource ComboBoxExtend}" Margin="10,0,10,0" Background="White" Foreground="Black" SelectionChanged="cboVersion_SelectionChanged"/>
+
             </StackPanel>
         </Border>
 
         <!-- Step 2 -->
         <hc:Divider Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" Content="Installation Path" Padding="10,10" Margin="0" LineStroke="#FF787878" FontWeight="Bold" FontSize="14" Foreground="White"/>
         <Border x:Name="brdrPath" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" Width="350" Height="90" CornerRadius="5" Margin="5" Background="{StaticResource TransparentBorder}">
-            
+
             <StackPanel>
                 <!-- Auto and Manual Radio -->
                 <hc:ButtonGroup Margin="10">
@@ -102,24 +104,30 @@
                 </WrapPanel>
 
             </StackPanel>
-            
+
         </Border>
 
         <!-- Download and install Progress-->
         <Border x:Name="panelProgress" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="6" Width="auto" Height="auto" CornerRadius="5" Margin="5" Background="{StaticResource TransparentBorder}" Visibility="Hidden">
             <StackPanel>
-                <TextBlock x:Name="lblProgressBar" Text="" HorizontalAlignment="Center" FontWeight="Bold" Margin="3"/>
+                <TextBlock x:Name="lblProgressBar" Text="" HorizontalAlignment="Center" FontWeight="Bold" Margin="5,0,5,0"/>
                 <ProgressBar x:Name="progressBarCTRL" Margin="0" x:FieldModifier="public"/>
             </StackPanel>
         </Border>
 
         <!-- Install and Exit Buttons -->
-        <WrapPanel x:Name="panelInstallExit" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-            <Button x:Name="btnInstall" Style="{StaticResource ButtonSuccess}" Content="Install" Margin="5" Width="100" Click="btnInstall_Click"></Button>
-            <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="5" Width="100" Click="btnExit_Click"></Button>
+        <WrapPanel x:Name="panelInstallExit" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Button x:Name="btnInstall" Style="{StaticResource ButtonSuccess}" Content="Install" Margin="0,0,20,0" Width="100" Click="btnInstall_Click"></Button>
+            <Button x:Name="btnExit" Style="{StaticResource ButtonDanger}" Content="Exit" Margin="20,0,0,0" Width="100" Click="btnExit_Click"></Button>
         </WrapPanel>
-        
-        
+
+        <!-- View Modpacks folder and Delete Modpacks Button -->
+        <WrapPanel HorizontalAlignment="Center" Margin="280,10,10,113" Width="70" Grid.Column="3" Grid.Row="3">
+            <Button x:Name="btnViewModpacks" Width="auto" Height="25" Padding="5,0" Margin="5" FontSize="11" ToolTip="View all downloaded modpacks"  Content="📁" Style="{StaticResource ButtonPrimary.Small}" Click="btnViewModpacks_Click" />
+            <Button x:Name="btnDeleteModpacks" Width="auto" Height="25" Padding="5,0" Margin="5" FontSize="11" ToolTip="Delete all downloaded modpacks" Content="🗑️" Style="{StaticResource ButtonWarning.Small}" Click="btnDeleteModpacks_Click" />
+        </WrapPanel>
+
+
 
     </Grid>
 </Window>
