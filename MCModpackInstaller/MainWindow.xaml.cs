@@ -124,9 +124,9 @@ namespace MCModpackInstaller
             if (ConnectionStat == 1 && isMaintenance !="1")
             {
                 disableTextbox();
+                CheckVersion();
 
 
-                
                 Task populatemodpack = retrieveModpack(); //Populate Modpack selection
 
             }
@@ -173,19 +173,25 @@ namespace MCModpackInstaller
 
             while (isMaintenance != "0")
             {
+                await Task.Delay(120000); // WAIT 2mins to retry again. To avoid spam read on firestore read log. 50k read daily is the limit of free firestoreDB
                 isMaintenance = await cSecret.isMaintenanceAsync();
             }
             panelMaintenance.Visibility = Visibility.Hidden;
+            CheckVersion();
             Task populatemodpack = retrieveModpack(); //Populate Modpack selection
         }
 
         public async void CheckVersion()
         {
-            string isVersionString = await cSecret.VersionChecker();
+            List<string> VersionData = await cSecret.VersionChecker();
+            string isVersionString = VersionData[0].ToString();
+            string isVersionLinkString = VersionData[1].ToString();
             double latestVersion = Convert.ToDouble(isVersionString);
             if (CurrentVersion < latestVersion)
             {
-
+                VersionUpdate vu = new VersionUpdate(latestVersion, CurrentVersion, isVersionLinkString);
+                vu.Owner = Application.Current.MainWindow;
+                vu.Show();
             }
         }
 
@@ -792,7 +798,6 @@ namespace MCModpackInstaller
                 MessageBox.Show("Folder did not exist or is already deleted.");
             }
         }
-
 
         public bool UrlIsValid(string url)
         {
