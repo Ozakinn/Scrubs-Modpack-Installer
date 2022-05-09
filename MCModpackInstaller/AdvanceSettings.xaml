@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MCModpackInstaller"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         mc:Ignorable="d"
-        Title="AdvanceSettings" Height="600" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="None">
+        Title="Advanced Settings" Height="600" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"></ColumnDefinition>
@@ -30,5 +30,13 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="20"></RowDefinition>
         </Grid.RowDefinitions>
+
+        <WrapPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="8">
+            <StackPanel>
+                <ToggleButton x:Name="tglBypassMaintenance" Margin="5,9" HorizontalAlignment="Center" Style="{StaticResource ToggleButtonSwitch}" Checked="tglBypassMaintenance_Checked" Unchecked="tglBypassMaintenance_Unchecked"/>
+                <TextBlock Style="{StaticResource TextBlockDefault}" Text="Bypass Maintenance Mode"/>
+            </StackPanel>
+        </WrapPanel>
+        
     </Grid>
 </Window>

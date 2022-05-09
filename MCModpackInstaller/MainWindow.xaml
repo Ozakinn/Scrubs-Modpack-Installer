@@ -13,7 +13,7 @@
         MouseDown="Window_MouseDown"
         Icon="Images/Zombie_Hat.ico"
         WindowStartupLocation="CenterScreen"
-        Loaded="Window_Loaded"
+        Loaded="Window_Loaded" KeyDown="Window_KeyDown"
         
         >
 

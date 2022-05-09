@@ -101,8 +101,9 @@ namespace MCModpackInstaller
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            
+
             this.Close();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void btnOzaki_Click(object sender, RoutedEventArgs e)
@@ -110,7 +111,8 @@ namespace MCModpackInstaller
             ozakiClickCount++;
             if (ozakiClickCount == 10)
             {
-                AccessRequired accessReqWPF = new AccessRequired();
+                ozakiClickCount = 0;
+                AccessRequired accessReqWPF = new AccessRequired(this);
                 accessReqWPF.Owner = Application.Current.MainWindow;
                 accessReqWPF.Show();
             }
@@ -840,7 +842,23 @@ namespace MCModpackInstaller
             return false;
         }
 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F9)
+            {
+                ozakiClickCount = 0;
+                AccessRequired accessReqWPF = new AccessRequired(this);
+                accessReqWPF.Owner = Application.Current.MainWindow;
+                accessReqWPF.Show();
+                
+            }
+        }
 
+        public object bypassMaintenance
+        {
+            get { return panelMaintenance.Visibility; }
+            set { panelMaintenance.Visibility = (Visibility)value; }
+        }
 
 
 
