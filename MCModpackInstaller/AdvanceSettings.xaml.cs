@@ -48,6 +48,8 @@ namespace MCModpackInstaller
             else
             {
                 this.mainForm1.bypassMaintenance = Visibility.Visible;
+                this.mainForm1.bypassMode = 0;
+                this.mainForm1.disableTextbox();
             }
 
         }

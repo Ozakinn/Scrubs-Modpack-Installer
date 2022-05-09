@@ -25,13 +25,15 @@ namespace MCModpackInstaller
         double getLatestVersion;
         double getCurrentVersion;
         string getLink;
+        double getNeedUpdate;
 
-        public VersionUpdate(double latestVersion, double currentVersion, string sentLink)
+        public VersionUpdate(double latestVersion, double currentVersion, string sentLink, double needupdate)
         {
             InitializeComponent();
             getLatestVersion = latestVersion;
             getCurrentVersion = currentVersion;
             getLink = sentLink;
+            getNeedUpdate = needupdate;
         }
 
         private void btnLater_Click(object sender, RoutedEventArgs e)
@@ -43,6 +45,14 @@ namespace MCModpackInstaller
         {
             lblNew.Status = getLatestVersion;
             lblCurrent.Status = getCurrentVersion;
+            if (getNeedUpdate >= 0.3)
+            {
+                lblUpdateNow.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lblUpdateNow.Visibility = Visibility.Hidden;
+            }
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)

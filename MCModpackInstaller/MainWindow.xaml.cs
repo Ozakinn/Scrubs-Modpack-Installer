@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using XamlAnimatedGif;
 using Google.Cloud.Firestore;
 using DocumentReference = Google.Cloud.Firestore.DocumentReference;
 using System.Diagnostics;
@@ -21,11 +11,8 @@ using System.IO;
 using Path = System.IO.Path;
 using System.Collections;
 using System.Net;
-using System.Threading;
-using HtmlAgilityPack;
 using System.ComponentModel;
 using Ionic.Zip;
-using System.Windows.Threading;
 
 namespace MCModpackInstaller
 {
@@ -39,8 +26,10 @@ namespace MCModpackInstaller
 
         int ozakiClickCount = 0;
         int ConnectionStat;
-        string isMaintenance;
+        string isMaintenance = "";
         double CurrentVersion = 0.5;
+
+        public int bypassMode = 0;
 
         string selectedModpack;
         string selectedModpackVersion;
@@ -121,27 +110,36 @@ namespace MCModpackInstaller
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
-            connectionStatus();
-            isMaintenance = await cSecret.isMaintenanceAsync();
-            if (ConnectionStat == 1 && isMaintenance !="1")
+            try
             {
-                disableTextbox();
-                CheckVersion();
+                connectionStatus();
+                isMaintenance = await cSecret.isMaintenanceAsync();
+                if (ConnectionStat == 1 && isMaintenance != "1")
+                {
+                    disableTextbox();
 
 
-                Task populatemodpack = retrieveModpack(); //Populate Modpack selection
+                    Task populatemodpack = retrieveModpack(); //Populate Modpack selection
 
+
+                    CheckVersion();
+
+                }
+                else if (isMaintenance == "1")
+                {
+                    MaintenanceMode();
+                }
             }
-            else if (isMaintenance == "1")
+            catch (Exception ex)
             {
-                MaintenanceMode();
+                MessageBox.Show(ex.ToString(),"error window loaded");
             }
+            
         }
 
         public void connectionStatus()
         {
             ConnectionStat = cSecret.ConString();
-            
 
             if (ConnectionStat == 1)
             {
@@ -170,17 +168,26 @@ namespace MCModpackInstaller
 
         public async void MaintenanceMode()
         {
-            disableTextbox();
-            panelMaintenance.Visibility = Visibility.Visible;
+            if (bypassMode == 1)
+            {
+                panelMaintenance.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                panelMaintenance.Visibility = Visibility.Visible;
+                disableTextbox();
+            }
 
             while (isMaintenance != "0")
             {
                 await Task.Delay(120000); // WAIT 2mins to retry again. To avoid spam read on firestore read log. 50k read daily is the limit of free firestoreDB
                 isMaintenance = await cSecret.isMaintenanceAsync();
             }
+
             panelMaintenance.Visibility = Visibility.Hidden;
-            CheckVersion();
             Task populatemodpack = retrieveModpack(); //Populate Modpack selection
+            CheckVersion();
+            
         }
 
         public async void CheckVersion()
@@ -191,9 +198,21 @@ namespace MCModpackInstaller
             double latestVersion = Convert.ToDouble(isVersionString);
             if (CurrentVersion < latestVersion)
             {
-                VersionUpdate vu = new VersionUpdate(latestVersion, CurrentVersion, isVersionLinkString);
-                vu.Owner = Application.Current.MainWindow;
-                vu.Show();
+                double needsUpdateNow = latestVersion - CurrentVersion;
+                if (needsUpdateNow >= 0.3)
+                {
+                    disableTextbox();
+                    VersionUpdate vu = new VersionUpdate(latestVersion, CurrentVersion, isVersionLinkString, needsUpdateNow);
+                    vu.Owner = Application.Current.MainWindow;
+                    vu.Show();
+                }
+                else
+                {
+                    VersionUpdate vu = new VersionUpdate(latestVersion, CurrentVersion, isVersionLinkString, needsUpdateNow);
+                    vu.Owner = Application.Current.MainWindow;
+                    vu.Show();
+                }
+                
             }
         }
 
@@ -409,7 +428,7 @@ namespace MCModpackInstaller
         {
             connectionStatus();
             isMaintenance = await cSecret.isMaintenanceAsync();
-            if (cboModpack.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1")
+            if ((cboModpack.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1") || (bypassMode == 1 && cboModpack.SelectedIndex >= 1))
             {
                 selectedModpack = cboModpack.SelectedItem.ToString();
 
@@ -439,7 +458,7 @@ namespace MCModpackInstaller
 
             connectionStatus();
             isMaintenance = await cSecret.isMaintenanceAsync();
-            if (cboVersion.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1")
+            if ((cboVersion.SelectedIndex >= 1 && ConnectionStat == 1 && isMaintenance != "1") || (bypassMode == 1 && cboVersion.SelectedIndex >= 1))
             {
                 selectedModpackVersion = cboVersion.SelectedItem.ToString();
 
@@ -501,7 +520,7 @@ namespace MCModpackInstaller
         {
             connectionStatus();
             isMaintenance = await cSecret.isMaintenanceAsync();
-            if (isMaintenance != "1")
+            if (isMaintenance != "1" || bypassMode == 1)
             {
                 lblProgressBar.HorizontalAlignment = HorizontalAlignment.Center; //revert back to original position
                 progressBarCTRL.Value = 0; //reset value back to 0
@@ -610,39 +629,31 @@ namespace MCModpackInstaller
             System.IO.DirectoryInfo modspath = new DirectoryInfo(extractPathMods);
             System.IO.DirectoryInfo configpath = new DirectoryInfo(extractPathConfig);
 
-            //delete mods folder content if exist
-            if (Directory.Exists(extractPathMods))
+            if (Directory.Exists(extractPath))
             {
-                foreach (FileInfo file in modspath.GetFiles())
+                //delete mods folder content if exist
+                if (Directory.Exists(extractPathMods))
                 {
-                    file.Delete();
+                    foreach (FileInfo file in modspath.GetFiles())
+                    {
+                        file.Delete();
+                    }
                 }
-            }
 
-            //delete config folder content if exist
-            if (Directory.Exists(extractPathConfig))
-            {
-                foreach (FileInfo file in configpath.GetFiles())
+                //delete config folder content if exist
+                if (Directory.Exists(extractPathConfig))
                 {
-                    file.Delete();
+                    foreach (FileInfo file in configpath.GetFiles())
+                    {
+                        file.Delete();
+                    }
                 }
-            }
 
-            if (rdManual.IsChecked == true && String.IsNullOrWhiteSpace(txtCustomPath.Text) == true)
-            {
-                MessageBox.Show("Please select a custom path");
-            }
-            else if (rdAuto.IsChecked == true)
-            {
-                disableTextbox();
-                btnDeleteModpacks.IsEnabled = false;
-                progressBarCTRL.Maximum = int.MaxValue;
-                panelProgress.Visibility = Visibility.Visible;
-                extractFile.RunWorkerAsync();
-            }
-            else
-            {
-                if (Directory.Exists(txtCustomPath.Text))
+                if (rdManual.IsChecked == true && String.IsNullOrWhiteSpace(txtCustomPath.Text) == true)
+                {
+                    MessageBox.Show("Please select a custom path");
+                }
+                else if (rdAuto.IsChecked == true)
                 {
                     disableTextbox();
                     btnDeleteModpacks.IsEnabled = false;
@@ -652,9 +663,25 @@ namespace MCModpackInstaller
                 }
                 else
                 {
-                    MessageBox.Show("Folder did not exist. Select custom path again.");
+                    if (Directory.Exists(txtCustomPath.Text))
+                    {
+                        disableTextbox();
+                        btnDeleteModpacks.IsEnabled = false;
+                        progressBarCTRL.Maximum = int.MaxValue;
+                        panelProgress.Visibility = Visibility.Visible;
+                        extractFile.RunWorkerAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Folder did not exist. Select custom path again.");
+                    }
                 }
             }
+            else
+            {
+                MessageBox.Show("It appears that Minecraft is not installed on your computer.\nInstall it first.");
+            }
+            
             
         }
 
@@ -773,7 +800,17 @@ namespace MCModpackInstaller
 
         private void btnViewModpacks_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("explorer.exe", tempPath + @"ScrubsInstaller\Modpack\");
+            string scrubspath = tempPath + @"ScrubsInstaller\Modpack\";
+            if (!Directory.Exists(scrubspath))
+            {
+                Directory.CreateDirectory(scrubspath);
+                Process.Start("explorer.exe", tempPath + @"ScrubsInstaller\Modpack\");
+            }
+            else
+            {
+                Process.Start("explorer.exe", tempPath + @"ScrubsInstaller\Modpack\");
+            }
+            
         }
 
         private void btnDeleteModpacks_Click(object sender, RoutedEventArgs e)
@@ -854,10 +891,16 @@ namespace MCModpackInstaller
             }
         }
 
+
         public object bypassMaintenance
         {
             get { return panelMaintenance.Visibility; }
-            set { panelMaintenance.Visibility = (Visibility)value; }
+            set 
+            { 
+                Task populatemodpack = retrieveModpack();
+                panelMaintenance.Visibility = (Visibility)value;
+                bypassMode = 1;
+            }
         }
 
 
