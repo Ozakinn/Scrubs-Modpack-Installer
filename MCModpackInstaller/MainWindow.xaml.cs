@@ -109,6 +109,7 @@ namespace MCModpackInstaller
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            disableTextbox();
             Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
             try
             {
@@ -116,7 +117,6 @@ namespace MCModpackInstaller
                 isMaintenance = await cSecret.isMaintenanceAsync();
                 if (ConnectionStat == 1 && isMaintenance != "1")
                 {
-                    disableTextbox();
 
 
                     Task populatemodpack = retrieveModpack(); //Populate Modpack selection
