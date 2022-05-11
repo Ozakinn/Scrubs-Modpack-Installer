@@ -38,6 +38,8 @@ namespace MCModpackInstaller
 
         string link;
         string versionmodpackDB;
+        string fabricforgeVersion;
+        string modloaderVersion;
 
         string sSelectedPath = "";
 
@@ -368,6 +370,8 @@ namespace MCModpackInstaller
                 //get data from list to string
                 link = versionData[0];
                 versionmodpackDB = versionData[1];
+                fabricforgeVersion = versionData[2];
+                modloaderVersion = versionData[3];
 
 
                 if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(versionmodpackDB))
@@ -376,6 +380,27 @@ namespace MCModpackInstaller
                     bool checkUrl = UrlIsValid(link);
                     if (checkUrl == true)
                     {
+                        if (!string.IsNullOrEmpty(fabricforgeVersion) && !string.IsNullOrEmpty(modloaderVersion))
+                        {
+                            if (modloaderVersion == "Fabric")
+                            {
+                                MessageBox.Show(
+                                "Make sure fabric mod loader is already installed.\n\n" +
+                                "Use Fabric " + fabricforgeVersion +
+                                "\n\n Not installed?\n" +
+                                "https://fabricmc.net/use/installer/", "FABRIC", MessageBoxButton.OK);
+                            }
+                            else if (modloaderVersion == "Forge")
+                            {
+                                MessageBox.Show(
+                                "Make sure forge mod loader is already installed.\n\n" +
+                                "Use Forge " + fabricforgeVersion +
+                                "\n\n Not installed?\n" +
+                                "https://files.minecraftforge.net/net/minecraftforge/forge/", "FORGE", MessageBoxButton.OK);
+                            }
+                            
+                        }
+
                         rdAuto.IsChecked = true;
                         rdAuto.IsEnabled = true;
                         rdManual.IsEnabled = true;
