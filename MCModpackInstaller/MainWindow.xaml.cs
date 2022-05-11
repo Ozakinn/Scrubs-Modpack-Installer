@@ -384,21 +384,30 @@ namespace MCModpackInstaller
                         {
                             if (modloaderVersion == "Fabric")
                             {
-                                MessageBox.Show(
-                                "Make sure fabric mod loader is already installed.\n\n" +
+
+                                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Make sure fabric mod loader is already installed.\n\n" +
                                 "Use Fabric " + fabricforgeVersion +
-                                "\n\n Not installed?\n" +
-                                "https://fabricmc.net/use/installer/", "FABRIC", MessageBoxButton.OK);
+                                "\n\n Not installed? Click 'Yes'\n" +
+                                "https://fabricmc.net/use/installer/", "FABRIC", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Asterisk);
+                                if (messageBoxResult.ToString() == "Yes") 
+                                { 
+                                    System.Diagnostics.Process.Start("https://fabricmc.net/use/installer/"); 
+                                }
                             }
                             else if (modloaderVersion == "Forge")
                             {
-                                MessageBox.Show(
+
+                                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Make sure fabric mod loader is already installed.\n\n" +
                                 "Make sure forge mod loader is already installed.\n\n" +
                                 "Use Forge " + fabricforgeVersion +
                                 "\n\n Not installed?\n" +
-                                "https://files.minecraftforge.net/net/minecraftforge/forge/", "FORGE", MessageBoxButton.OK);
+                                "https://files.minecraftforge.net/net/minecraftforge/forge/", "FORGE", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Asterisk);
+                                if (messageBoxResult.ToString() == "Yes")
+                                {
+                                    System.Diagnostics.Process.Start("https://files.minecraftforge.net/net/minecraftforge/forge/");
+                                }
                             }
-                            
+
                         }
 
                         rdAuto.IsChecked = true;
