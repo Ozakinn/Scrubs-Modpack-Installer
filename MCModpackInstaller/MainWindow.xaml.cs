@@ -266,7 +266,7 @@ namespace MCModpackInstaller
 
             if (rdManual.IsChecked == true)
             {
-                txtCustomPath.IsEnabled = true;
+                txtCustomPath.IsEnabled = false;
                 btnSelectPath.IsEnabled = true;
             }
             else
@@ -529,7 +529,7 @@ namespace MCModpackInstaller
             rdAuto.IsEnabled = true;
             rdManual.IsEnabled = true;
 
-            txtCustomPath.IsEnabled = true;
+            txtCustomPath.IsEnabled = false;
             btnSelectPath.IsEnabled = true;
 
             btnInstall.IsEnabled = true;
@@ -663,25 +663,8 @@ namespace MCModpackInstaller
             System.IO.DirectoryInfo modspath = new DirectoryInfo(extractPathMods);
             System.IO.DirectoryInfo configpath = new DirectoryInfo(extractPathConfig);
 
-            if (Directory.Exists(extractPath))
+            if (Directory.Exists(extractPath) || rdManual.IsChecked == true)
             {
-                //delete mods folder content if exist
-                if (Directory.Exists(extractPathMods))
-                {
-                    foreach (FileInfo file in modspath.GetFiles())
-                    {
-                        file.Delete();
-                    }
-                }
-
-                //delete config folder content if exist
-                if (Directory.Exists(extractPathConfig))
-                {
-                    foreach (FileInfo file in configpath.GetFiles())
-                    {
-                        file.Delete();
-                    }
-                }
 
                 if (rdManual.IsChecked == true && String.IsNullOrWhiteSpace(txtCustomPath.Text) == true)
                 {
@@ -689,6 +672,24 @@ namespace MCModpackInstaller
                 }
                 else if (rdAuto.IsChecked == true)
                 {
+                    //delete mods folder content if exist
+                    if (Directory.Exists(extractPathMods))
+                    {
+                        foreach (FileInfo file in modspath.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                    }
+
+                    //delete config folder content if exist
+                    if (Directory.Exists(extractPathConfig))
+                    {
+                        foreach (FileInfo file in configpath.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                    }
+
                     disableTextbox();
                     btnDeleteModpacks.IsEnabled = false;
                     progressBarCTRL.Maximum = int.MaxValue;
@@ -697,6 +698,24 @@ namespace MCModpackInstaller
                 }
                 else
                 {
+                    //delete mods folder content if exist
+                    if (Directory.Exists(extractPathMods))
+                    {
+                        foreach (FileInfo file in modspath.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                    }
+
+                    //delete config folder content if exist
+                    if (Directory.Exists(extractPathConfig))
+                    {
+                        foreach (FileInfo file in configpath.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                    }
+
                     if (Directory.Exists(txtCustomPath.Text))
                     {
                         disableTextbox();
