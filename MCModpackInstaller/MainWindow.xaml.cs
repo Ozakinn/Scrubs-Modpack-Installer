@@ -24,6 +24,8 @@ namespace MCModpackInstaller
         Credentials.secrets cSecret = new Credentials.secrets();
         FirestoreDb database;
 
+        string logoToolTip = "Developed by Ozaki\nMay 2022";
+
         int ozakiClickCount = 0;
         int ConnectionStat;
         string isMaintenance = "";
@@ -111,6 +113,7 @@ namespace MCModpackInstaller
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            appLogo.ToolTip = logoToolTip;
             disableTextbox();
             Task loadMainWindow = mainWindowDelay(); //Allow Main window to load and initialize first for optimal user usage
             try
