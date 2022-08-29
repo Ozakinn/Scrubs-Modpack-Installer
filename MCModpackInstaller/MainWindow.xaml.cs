@@ -29,7 +29,7 @@ namespace MCModpackInstaller
         int ozakiClickCount = 0;
         int ConnectionStat;
         string isMaintenance = "";
-        double CurrentVersion = 0.6;
+        double CurrentVersion = 0.7;
 
         public int bypassMode = 0;
 
