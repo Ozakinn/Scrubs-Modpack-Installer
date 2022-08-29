@@ -400,8 +400,7 @@ namespace MCModpackInstaller
                             else if (modloaderVersion == "Forge")
                             {
 
-                                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Make sure fabric mod loader is already installed.\n\n" +
-                                "Make sure forge mod loader is already installed.\n\n" +
+                                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Make sure forge mod loader is already installed.\n\n" +
                                 "Use Forge " + fabricforgeVersion +
                                 "\n\n Not installed?\n" +
                                 "https://files.minecraftforge.net/net/minecraftforge/forge/", "FORGE", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Asterisk);
