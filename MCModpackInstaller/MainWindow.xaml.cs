@@ -53,6 +53,9 @@ namespace MCModpackInstaller
 
         public bool saveMCSettings;
         string saveMCSettingsContent;
+        string saveMCsodiumContent;
+        string saveMCsodiumExtraContent;
+        string saveMCirisShaderContent;
 
 
         int errorLog = 0;
@@ -284,6 +287,7 @@ namespace MCModpackInstaller
 
             btnInstall.IsEnabled = true;
             btnDeleteModpacks.IsEnabled = true;
+            btnMoreSettings.IsEnabled = true;
         }
 
         public void disableTextbox()
@@ -619,6 +623,7 @@ namespace MCModpackInstaller
                 {
                     disableTextbox();
                     btnDeleteModpacks.IsEnabled = false;
+                    btnMoreSettings.IsEnabled = false;
 
                     progressBarCTRL.Maximum = 100;
 
@@ -707,6 +712,7 @@ namespace MCModpackInstaller
 
                     disableTextbox();
                     btnDeleteModpacks.IsEnabled = false;
+                    btnMoreSettings.IsEnabled = false;
                     progressBarCTRL.Maximum = int.MaxValue;
                     panelProgress.Visibility = Visibility.Visible;
                     extractFile.RunWorkerAsync();
@@ -737,6 +743,7 @@ namespace MCModpackInstaller
 
                         disableTextbox();
                         btnDeleteModpacks.IsEnabled = false;
+                        btnMoreSettings.IsEnabled = false;
                         progressBarCTRL.Maximum = int.MaxValue;
                         panelProgress.Visibility = Visibility.Visible;
                         extractFile.RunWorkerAsync();
@@ -759,16 +766,56 @@ namespace MCModpackInstaller
         {
             if (step == 1)
             {
+                //MC Options
                 if (File.Exists(extractPath + @"\options.txt"))
                 {
                     //WILL GO HERE IF THE FILE EXISTS
                     saveMCSettingsContent = File.ReadAllText(extractPath + @"\options.txt");
+                }
 
+                //MC Sodium Extra Mod
+                if (File.Exists(extractPath + @"\config\sodium-extra-options.json"))
+                {
+                    saveMCsodiumExtraContent = File.ReadAllText(extractPath + @"\config\sodium-extra-options.json");
+                }
+
+                //MC Sodium Mod
+                if (File.Exists(extractPath + @"\config\sodium-options.json"))
+                {
+                    saveMCsodiumContent = File.ReadAllText(extractPath + @"\config\sodium-options.json");
+                }
+
+                //MC Iris Shaders Mod
+                if (File.Exists(extractPath + @"\config\iris.properties"))
+                {
+                    saveMCirisShaderContent = File.ReadAllText(extractPath + @"\config\iris.properties");
                 }
             }
             else if (step == 2)
             {
-                File.WriteAllText(extractPath + @"\options.txt", saveMCSettingsContent);
+                //MC Options
+                if (saveMCSettingsContent != null)
+                {
+                    File.WriteAllText(extractPath + @"\options.txt", saveMCSettingsContent);
+                }
+
+                //MC Sodium Extra Mod
+                if (saveMCsodiumExtraContent != null)
+                {
+                    File.WriteAllText(extractPath + @"\config\sodium-extra-options.json", saveMCsodiumExtraContent);
+                }
+
+                //MC Sodium Mod
+                if (saveMCsodiumContent != null)
+                {
+                    File.WriteAllText(extractPath + @"\config\sodium-options.json", saveMCsodiumContent);
+                }
+
+                //MC Iris Shaders Mod
+                if (saveMCirisShaderContent != null)
+                {
+                    File.WriteAllText(extractPath + @"\config\iris.properties", saveMCirisShaderContent);
+                }
             }
         }
 
@@ -803,6 +850,7 @@ namespace MCModpackInstaller
                 //MessageBox.Show("Done!");
                 enableTextbox();
                 btnDeleteModpacks.IsEnabled = true;
+                btnMoreSettings.IsEnabled = true;
 
                 //check if Save MC Options/Settings is true
                 //STEP 2 - SET BACK SAVED SETTINGS CONTENT
@@ -1005,7 +1053,7 @@ namespace MCModpackInstaller
 
             //MessageBox.Show(saveMCSettings.ToString());
 
-            moreSettingsUI.Show();
+            moreSettingsUI.ShowDialog();
         }
 
 
