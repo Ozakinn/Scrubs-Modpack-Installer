@@ -353,6 +353,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MoreSettings.xaml.cs">
+      <DependentUpon>MoreSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VersionUpdate.xaml.cs">
       <DependentUpon>VersionUpdate.xaml</DependentUpon>
     </Compile>
@@ -383,6 +386,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MoreSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="VersionUpdate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -450,6 +457,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\ozakiIconLogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Images\realisticmc.avi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -13,6 +13,7 @@ using System.Collections;
 using System.Net;
 using System.ComponentModel;
 using Ionic.Zip;
+using System.Security.Policy;
 
 namespace MCModpackInstaller
 {
@@ -29,7 +30,7 @@ namespace MCModpackInstaller
         int ozakiClickCount = 0;
         int ConnectionStat;
         string isMaintenance = "";
-        double CurrentVersion = 0.7;
+        double CurrentVersion = 0.8;
 
         public int bypassMode = 0;
 
@@ -49,6 +50,9 @@ namespace MCModpackInstaller
         string dlPath;
         string minecraftPathDefault = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"\\.minecraft";
         string extractPath;
+
+        public bool saveMCSettings;
+        string saveMCSettingsContent;
 
 
         int errorLog = 0;
@@ -668,6 +672,15 @@ namespace MCModpackInstaller
             if (Directory.Exists(extractPath) || rdManual.IsChecked == true)
             {
 
+
+                //check if Save MC Options/Settings is true
+                //STEP 1 - GET SETTINGS CONTENT
+                if (saveMCSettings == true)
+                {
+                    saveMCOptionsSettings(extractPath, 1);
+                }
+
+
                 if (rdManual.IsChecked == true && String.IsNullOrWhiteSpace(txtCustomPath.Text) == true)
                 {
                     MessageBox.Show("Please select a custom path");
@@ -742,6 +755,23 @@ namespace MCModpackInstaller
             
         }
 
+        public void saveMCOptionsSettings(string extractPath, int step)
+        {
+            if (step == 1)
+            {
+                if (File.Exists(extractPath + @"\options.txt"))
+                {
+                    //WILL GO HERE IF THE FILE EXISTS
+                    saveMCSettingsContent = File.ReadAllText(extractPath + @"\options.txt");
+
+                }
+            }
+            else if (step == 2)
+            {
+                File.WriteAllText(extractPath + @"\options.txt", saveMCSettingsContent);
+            }
+        }
+
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             /*
@@ -773,6 +803,13 @@ namespace MCModpackInstaller
                 //MessageBox.Show("Done!");
                 enableTextbox();
                 btnDeleteModpacks.IsEnabled = true;
+
+                //check if Save MC Options/Settings is true
+                //STEP 2 - SET BACK SAVED SETTINGS CONTENT
+                if (saveMCSettings == true)
+                {
+                    saveMCOptionsSettings(extractPath, 2);
+                }
             }
         }
 
@@ -958,6 +995,17 @@ namespace MCModpackInstaller
                 panelMaintenance.Visibility = (Visibility)value;
                 bypassMode = 1;
             }
+        }
+
+        private void btnMoreSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+            MoreSettings moreSettingsUI = new MoreSettings(this);
+            moreSettingsUI.Owner = Application.Current.MainWindow;
+
+            //MessageBox.Show(saveMCSettings.ToString());
+
+            moreSettingsUI.Show();
         }
 
 
