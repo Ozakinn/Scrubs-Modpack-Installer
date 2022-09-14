@@ -42,6 +42,7 @@ I would appreciate it if you could offer me a cup of coffee. ☕💖
 - Select Modpack
 - Download and Install Modpack (Automatically install if the selected modpack is alread downloaded)
 - Maintenance Mode (If the application's firebaseDB maintenance mode is set to true)
+- Option to save Minecraft keybinds, video settings, shaders, and other settings when installing modpack
 - Admin Panel (Bypass Maintenance Mode)
 
 ## License
