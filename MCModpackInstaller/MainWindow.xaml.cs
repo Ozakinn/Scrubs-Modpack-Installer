@@ -30,7 +30,7 @@ namespace MCModpackInstaller
         int ozakiClickCount = 0;
         int ConnectionStat;
         string isMaintenance = "";
-        double CurrentVersion = 0.8;
+        double CurrentVersion = 0.9;
 
         public int bypassMode = 0;
 
@@ -56,6 +56,7 @@ namespace MCModpackInstaller
         string saveMCsodiumContent;
         string saveMCsodiumExtraContent;
         string saveMCirisShaderContent;
+        string saveMCribidiumContent;
 
 
         int errorLog = 0;
@@ -790,6 +791,12 @@ namespace MCModpackInstaller
                 {
                     saveMCirisShaderContent = File.ReadAllText(extractPath + @"\config\iris.properties");
                 }
+
+                //MC Ribidium Forge Sodium Mod
+                if (File.Exists(extractPath + @"\config\rubidium-options.json"))
+                {
+                    saveMCribidiumContent = File.ReadAllText(extractPath + @"\config\rubidium-options.json");
+                }
             }
             else if (step == 2)
             {
@@ -815,6 +822,12 @@ namespace MCModpackInstaller
                 if (saveMCirisShaderContent != null)
                 {
                     File.WriteAllText(extractPath + @"\config\iris.properties", saveMCirisShaderContent);
+                }
+
+                //MC Ribidium Forge Sodium Mod
+                if (saveMCribidiumContent != null)
+                {
+                    File.WriteAllText(extractPath + @"\config\rubidium-options.json", saveMCribidiumContent);
                 }
             }
         }
